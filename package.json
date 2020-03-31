@@ -9,7 +9,7 @@
         "start": "node ./index.js",
         "watch": "nodemon ./index.js",
         "lint": "eslint .",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "mocha tests/**/*.test.js"
     },
     "repository": {
         "type": "git",
@@ -23,12 +23,14 @@
         "restify": "~8.4.0"
     },
     "devDependencies": {
+        "botbuilder-testing": "^4.8.0",
         "eslint": "^6.6.0",
         "eslint-config-standard": "^14.1.0",
         "eslint-plugin-import": "^2.18.2",
         "eslint-plugin-node": "^10.0.0",
         "eslint-plugin-promise": "^4.2.1",
         "eslint-plugin-standard": "^4.0.1",
+        "mocha": "^7.1.1",
         "nodemon": "~1.19.4"
     }
 }
