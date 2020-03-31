@@ -23,21 +23,21 @@ const NAME_PROMPT = 'NAME_PROMPT';
 const NUMBER_PROMPT = 'NUMBER_PROMPT';
 const WATERFALL_DIALOG = 'WATERFALL_DIALOG';
 
-var globalUserProfile = new UserProfile();
-
 /**
- * This is a dialog in which userData in improperly stored in a global variable, globalUserProfile.
+ * This is a dialog in which userData in improperly stored in a dialog property, this.propertyUserProfile.
  * It does not pass any data through step.values.
  *
  * For the most part, this works fine for a single user or multiple users non-concurrently using this dialog,
  * which makes this difficult to catch.
  *
- * However, storing user data this way is improper because the userProfileDialogGlobal.js file is shared between users.
- * When one user starts this dialog, it may overwrite the global variable, globalUserProfile.
+ * However, storing user data this way is improper because Dialogs are singletons, so all Dialog properties are shared between users.
+ * When one user starts this dialog, it may overwrite the the shared property, this.propertyUserProfile.
  */
-class UserProfileDialogGlobal extends ComponentDialog {
-    constructor() {
-        super('userProfileDialogGlobal');
+class UserProfileDialogProperty extends ComponentDialog {
+    constructor(userState) {
+        super('userProfileDialogProperty');
+
+        this.propertyUserProfile = new UserProfile();
 
         this.addDialog(new TextPrompt(NAME_PROMPT));
         this.addDialog(new ChoicePrompt(CHOICE_PROMPT));
@@ -79,12 +79,12 @@ class UserProfileDialogGlobal extends ComponentDialog {
         // Here, we improperly create a userProfile for the user starting this dialog.
         // This is improper because this will reset the userProfile for ALL other users because
         // it's being stored globally in this file.
-        globalUserProfile = new UserProfile();
+        this.propertyUserProfile = new UserProfile();
         // Skip this step if we already have the user's transport.
-        if (globalUserProfile.transport) {
+        if (this.propertyUserProfile.transport) {
             // ChoicePrompt results will show in the next step with step.result.value.
             // Since we don't need to prompt, we can pass the ChoicePrompt result manually.
-            return await step.next({ value: globalUserProfile.transport });
+            return await step.next({ value: this.propertyUserProfile.transport });
         }
 
         // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
@@ -97,12 +97,12 @@ class UserProfileDialogGlobal extends ComponentDialog {
 
     async nameStep(step) {
         // Set the transport property of the userProfile.
-        globalUserProfile.transport = step.result.value;
+        this.propertyUserProfile.transport = step.result.value;
 
         // Skip the prompt if we already have the user's name.
-        if (globalUserProfile.name) {
+        if (this.propertyUserProfile.name) {
             // We pass in a skipped bool so we know whether or not to send messages in the next step.
-            return await step.next({ value: globalUserProfile.name, skipped: true });
+            return await step.next({ value: this.propertyUserProfile.name, skipped: true });
         }
 
         return await step.prompt(NAME_PROMPT, 'Please enter your name.');
@@ -110,11 +110,11 @@ class UserProfileDialogGlobal extends ComponentDialog {
 
     async nameConfirmStep(step) {
         // If userState is working correctly, we'll have userProfile.transport from the previous step.
-        if (!globalUserProfile || !globalUserProfile.transport) {
-            throw new Error(`transport property does not exist in userProfile.\nuserProfile:\n ${ JSON.stringify(globalUserProfile) }`);
+        if (!this.propertyUserProfile || !this.propertyUserProfile.transport) {
+            throw new Error(`transport property does not exist in userProfile.\nuserProfile:\n ${ JSON.stringify(this.propertyUserProfile) }`);
         }
         // Text prompt results normally end up in step.result, but if we skipped the prompt, it will be in step.result.value.
-        globalUserProfile.name = step.result.value || step.result;
+        this.propertyUserProfile.name = step.result.value || step.result;
 
         // We can send messages to the user at any point in the WaterfallStep. Only do this if we didn't skip the prompt.
         if (!step.result.skipped) {
@@ -123,7 +123,7 @@ class UserProfileDialogGlobal extends ComponentDialog {
 
         // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
         // Skip the prompt if we already have the user's age.
-        if (globalUserProfile.age) {
+        if (this.propertyUserProfile.age) {
             return await step.next('yes');
         }
         return await step.prompt(CONFIRM_PROMPT, 'Do you want to give your age?', ['yes', 'no']);
@@ -131,14 +131,14 @@ class UserProfileDialogGlobal extends ComponentDialog {
 
     async ageStep(step) {
         // If userState is working correctly, we'll have userProfile.name from the previous step.
-        if (!globalUserProfile || !globalUserProfile.name) {
-            throw new Error(`name property does not exist in userProfile.\nuserProfile:\n ${ JSON.stringify(globalUserProfile) }`);
+        if (!this.propertyUserProfile || !this.propertyUserProfile.name) {
+            throw new Error(`name property does not exist in userProfile.\nuserProfile:\n ${ JSON.stringify(this.propertyUserProfile) }`);
         }
 
         // Skip the prompt if we already have the user's age.
-        if (globalUserProfile.age) {
+        if (this.propertyUserProfile.age) {
             // We pass in a skipped bool so we know whether or not to send messages in the next step.
-            return await step.next({ value: globalUserProfile.age, skipped: true });
+            return await step.next({ value: this.propertyUserProfile.age, skipped: true });
         }
 
         if (step.result) {
@@ -155,18 +155,18 @@ class UserProfileDialogGlobal extends ComponentDialog {
 
     async pictureStep(step) {
         // Confirm prompt results normally end up in step.result, but if we skipped the prompt, it will be in step.result.value.
-        globalUserProfile.age = step.result.value || step.result;
+        this.propertyUserProfile.age = step.result.value || step.result;
 
         if (!step.result.skipped) {
-            const msg = globalUserProfile.age === -1 ? 'No age given.' : `I have your age as ${ globalUserProfile.age }.`;
+            const msg = this.propertyUserProfile.age === -1 ? 'No age given.' : `I have your age as ${ this.propertyUserProfile.age }.`;
 
             // We can send messages to the user at any point in the WaterfallStep. Only send it if we didn't skip the prompt.
             await step.context.sendActivity(msg);
         }
 
         // Skip the prompt if we already have the user's picture.
-        if (globalUserProfile.picture) {
-            return await step.next(globalUserProfile.picture);
+        if (this.propertyUserProfile.picture) {
+            return await step.next(this.propertyUserProfile.picture);
         }
 
         if (step.context.activity.channelId === Channels.msteams) {
@@ -186,21 +186,21 @@ class UserProfileDialogGlobal extends ComponentDialog {
 
     async confirmStep(step) {
         // If userState is working correctly, we'll have userProfile.age from the previous step.
-        if (!globalUserProfile || !globalUserProfile.age) {
-            throw new Error(`age property does not exist in userProfile.\nuserProfile:\n ${ JSON.stringify(globalUserProfile) }`);
+        if (!this.propertyUserProfile || !this.propertyUserProfile.age) {
+            throw new Error(`age property does not exist in userProfile.\nuserProfile:\n ${ JSON.stringify(this.propertyUserProfile) }`);
         }
-        globalUserProfile.picture = (step.result && typeof step.result === 'object' && step.result[0]) || 'no picture provided';
+        this.propertyUserProfile.picture = (step.result && typeof step.result === 'object' && step.result[0]) || 'no picture provided';
 
-        let msg = `I have your mode of transport as ${ globalUserProfile.transport } and your name as ${ globalUserProfile.name }`;
-        if (globalUserProfile.age !== -1) {
-            msg += ` and your age as ${ globalUserProfile.age }`;
+        let msg = `I have your mode of transport as ${ this.propertyUserProfile.transport } and your name as ${ this.propertyUserProfile.name }`;
+        if (this.propertyUserProfile.age !== -1) {
+            msg += ` and your age as ${ this.propertyUserProfile.age }`;
         }
 
         msg += '.';
         await step.context.sendActivity(msg);
-        if (globalUserProfile.picture && globalUserProfile.picture !== 'no picture provided') {
+        if (this.propertyUserProfile.picture && this.propertyUserProfile.picture !== 'no picture provided') {
             try {
-                await step.context.sendActivity(MessageFactory.attachment(globalUserProfile.picture, 'This is your profile picture.'));
+                await step.context.sendActivity(MessageFactory.attachment(this.propertyUserProfile.picture, 'This is your profile picture.'));
             } catch (err) {
                 await step.context.sendActivity('A profile picture was saved but could not be displayed here.');
             }
@@ -215,7 +215,7 @@ class UserProfileDialogGlobal extends ComponentDialog {
             await step.context.sendActivity('User Profile Saved.');
         } else {
             // Ensure the userProfile is cleared
-            globalUserProfile = new UserProfile();
+            this.propertyUserProfile = new UserProfile();
             await step.context.sendActivity('Thanks. Your profile will not be kept.');
         }
 
@@ -252,4 +252,4 @@ class UserProfileDialogGlobal extends ComponentDialog {
     }
 }
 
-module.exports.UserProfileDialogGlobal = UserProfileDialogGlobal;
+module.exports.UserProfileDialogProperty = UserProfileDialogProperty;

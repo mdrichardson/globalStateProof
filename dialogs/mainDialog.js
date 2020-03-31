@@ -10,6 +10,7 @@ const {
 } = require('botbuilder-dialogs');
 const { UserProfileDialogNormal } = require('./userProfileDialogNormal');
 const { UserProfileDialogGlobal } = require('./userProfileDialogGlobal');
+const { UserProfileDialogProperty } = require('./userProfileDialogProperty');
 
 const CHOICE_PROMPT = 'CHOICE_PROMPT';
 const MAIN_WATERFALL_DIALOG = 'MAIN_WATERFALL_DIALOG';
@@ -24,7 +25,8 @@ class MainDialog extends ComponentDialog {
         this.addDialog(new ChoicePrompt(CHOICE_PROMPT));
 
         this.addDialog(new UserProfileDialogNormal(userState));
-        this.addDialog(new UserProfileDialogGlobal(userState));
+        this.addDialog(new UserProfileDialogGlobal());
+        this.addDialog(new UserProfileDialogProperty());
 
         this.addDialog(new WaterfallDialog(MAIN_WATERFALL_DIALOG, [
             this.selectStep.bind(this),
@@ -54,8 +56,8 @@ class MainDialog extends ComponentDialog {
     async selectStep(step) {
         const choices = [
             { value: 'Normal (State Properly Stored)', synonyms: ['normal'] },
-            { value: 'State Stored Globally', synonyms: ['global', 'globally'] },
-            { value: 'State Stored in Properties', synonyms: ['property', 'properties', 'singleton'] }
+            { value: 'State Improperly Stored Globally', synonyms: ['global', 'globally'] },
+            { value: 'State Improperly Stored in Properties', synonyms: ['property', 'properties', 'singleton'] }
         ];
         return await step.prompt(CHOICE_PROMPT, {
             prompt: 'Please select which dialog you would like to run.',
@@ -67,8 +69,10 @@ class MainDialog extends ComponentDialog {
         switch (step.result.value) {
             case 'Normal (State Properly Stored)':
                 return await step.beginDialog('userProfileDialogNormal');
-            case 'State Stored Globally':
+            case 'State Improperly Stored Globally':
                 return await step.beginDialog('userProfileDialogGlobal');
+            case 'State Improperly Stored in Properties':
+                return await step.beginDialog('userProfileDialogProperty');
             default:
                 await step.context.sendActivity('Invalid response');
                 return await step.replaceDialog('MainDialog');
