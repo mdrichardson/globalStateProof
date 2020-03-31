@@ -10,7 +10,7 @@ const { BotFrameworkAdapter, ConversationState, MemoryStorage, UserState } = req
 
 // Import our custom bot class that provides a turn handling function.
 const { DialogBot } = require('./bots/dialogBot');
-const { UserProfileDialogNormal } = require('./dialogs/userProfileDialogNormal');
+const { MainDialog } = require('./dialogs/mainDialog');
 
 // Read environment variables from .env file
 const ENV_FILE = path.join(__dirname, '.env');
@@ -56,7 +56,7 @@ const conversationState = new ConversationState(memoryStorage);
 const userState = new UserState(memoryStorage);
 
 // Create the main dialog.
-const dialog = new UserProfileDialogNormal(userState);
+const dialog = new MainDialog(userState);
 const bot = new DialogBot(conversationState, userState, dialog);
 
 // Create HTTP server.

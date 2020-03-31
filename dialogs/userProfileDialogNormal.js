@@ -238,6 +238,8 @@ class UserProfileDialogNormal extends ComponentDialog {
 
             // Save the userProfile to userState.
             await this.userProfileAccessor.set(step.context, userProfile);
+
+            await step.context.sendActivity('User Profile Saved.');
         } else {
             // Ensure the userProfile is cleared
             await this.userProfileAccessor.set(step.context, {});
