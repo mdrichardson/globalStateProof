@@ -62,8 +62,24 @@ function assertReplyForAlfred(reply) {
     assert.strictEqual(reply.conversation.id, 'alfredConversation');
 }
 
+async function sendBatmanActivity(client, text) {
+    return await client.sendActivity({
+        text,
+        from: { id: 'batman', name: 'Batman' },
+        conversation: { id: 'batmanConversation' }
+    });
+}
+
+function assertReplyForBatman(reply) {
+    assert.strictEqual(reply.recipient.id, 'batman');
+    assert.strictEqual(reply.recipient.name, 'Batman');
+    assert.strictEqual(reply.conversation.id, 'batmanConversation');
+}
+
 module.exports = {
     CustomDialogTestLogger,
     sendAlfredActivity,
-    assertReplyForAlfred
+    assertReplyForAlfred,
+    sendBatmanActivity,
+    assertReplyForBatman
 };
