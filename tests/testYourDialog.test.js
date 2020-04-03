@@ -86,30 +86,30 @@ const activities = [
     { text: 'User Profile Saved.', from: USERS.bot }
 ];
 
-// No need to change anything below this line
+// No need to change anything below this line.
 describe(`${ dialog.constructor.name } Test Concurrent Users`, async () => {
     if (!USERS.bot) throw new Error('bot key is required in USERS variable');
     if (activities[0].from.id === USERS.bot.id) throw new Error('User MUST go first');
 
     const client = new DialogTestClient('test', dialog, undefined, [new CustomDialogTestLogger()]);
 
-    // Assert each key matches expected result
+    // Assert each key matches expected result.
     function assertReplyMatchesActivity(reply, activity) {
         for (const key of Object.keys(activity)) {
-            // Don't check the from key
+            // Don't check the from key.
             if (key !== 'from') {
                 assert.strictEqual(reply[key], activity[key]);
             }
         }
     }
 
-    // Iterate over all activities
+    // Iterate over all activities.
     for (let i = 0; i < activities.length; i++) {
         const activity = activities[i];
         // Always start turn with the user.
         if (activity.from.id !== USERS.bot.id) {
             it(`Should proceed through turn starting with index: ${ i }.`, async function() {
-                // Ensure we're using the correct conversation
+                // Ensure we're using the correct conversation.
                 const message = {
                     ...activity,
                     conversation: { id: `${ activity.from.id }-conversation` }
@@ -118,7 +118,7 @@ describe(`${ dialog.constructor.name } Test Concurrent Users`, async () => {
                 let nextReplyIndex = i + 1;
                 assertReplyMatchesActivity(reply, activities[nextReplyIndex]);
 
-                // Check follow-up bot responses
+                // Check follow-up bot responses.
                 reply = client.getNextReply();
                 while (reply) {
                     nextReplyIndex++;
