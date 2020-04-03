@@ -4,6 +4,11 @@ const { DialogTestClient } = require('botbuilder-testing');
 const { MemoryStorage, UserState } = require('botbuilder');
 const { CustomDialogTestLogger } = require('./testUtils');
 
+/**
+ * This test allows you to easily test your own dialogs with concurrent users.
+ * Just edit all of the TODO: items.
+ */
+
 // TODO: Replace this with your dialog. Leave the ":DialogToTest" part; this makes it so you don't need to rename other variables.
 // However, you may need to pass in additional arguments to the `const dialog = new DialogToTest()` call, below.
 const { UserProfileDialogNormal: DialogToTest } = require('../dialogs/userProfileDialogNormal');
