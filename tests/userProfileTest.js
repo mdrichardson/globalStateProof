@@ -8,6 +8,12 @@ const { DialogTestClient } = require('botbuilder-testing');
 const assert = require('assert');
 const { CustomDialogTestLogger, assertReplyForAlfred, sendAlfredActivity, assertReplyForBernard, sendBernardActivity } = require('./testUtils');
 
+/**
+ * This is a generic test used by all of the UserProfileDialog*'s to show definitively that a dialog with properly stored state (UserProfileDialogNormal)
+ * works with concurrent users, whereas dialogs with improperly stored state (UserProfileDialogGlobal, UserProfileDialogProperty)
+ * fail the exact same tests.
+ */
+
 function timeout(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -15,6 +21,9 @@ function timeout(ms) {
 const borderString = '****************************************************************';
 
 async function runTest(dialogTest) {
+    /**
+     * Test the dialog with a single user. All the dialogs will pass, showing why this can be difficult to catch in testing.
+     */
     describe(`${ dialogTest.name } UserProfile Dialog - Single User`, () => {
         before(async function() {
             this.timeout(10000);
@@ -27,6 +36,7 @@ async function runTest(dialogTest) {
 
         const client = new DialogTestClient('test', dialogTest.dialog, undefined, [new CustomDialogTestLogger()]);
 
+        // Start of Alfred Conversation.
         it('Should proceed through the transport step', async () => {
             const reply = await sendAlfredActivity(client, 'hello');
             assertReplyForAlfred(reply);
@@ -80,6 +90,9 @@ async function runTest(dialogTest) {
         });
     });
 
+    /**
+     * Test the dialog with concurrent users. Dialogs with improper state will fail.
+     */
     describe(`${ dialogTest.name } UserProfile Dialog - Two Concurrent Users`, () => {
         before(async function() {
             this.timeout(11000);
@@ -92,6 +105,7 @@ async function runTest(dialogTest) {
 
         const client = new DialogTestClient('test', dialogTest.dialog, undefined, [new CustomDialogTestLogger()]);
 
+        // Start of Alfred Conversation.
         it('ALFRED Should proceed through the transport step', async () => {
             const reply = await sendAlfredActivity(client, 'hello');
             assertReplyForAlfred(reply);
@@ -112,6 +126,7 @@ async function runTest(dialogTest) {
             assert.strictEqual(reply.text, 'Do you want to give your age? (1) Yes or (2) No');
         });
 
+        // Start of Bernard Conversation.
         it('BERNARD Should proceed through the transport step', async () => {
             const reply = await sendBernardActivity(client, 'hi');
             assertReplyForBernard(reply);
@@ -132,6 +147,7 @@ async function runTest(dialogTest) {
             assert.strictEqual(reply.text, 'Do you want to give your age? (1) Yes or (2) No');
         });
 
+        // Continuation of Alfred Conversation.
         it('ALFRED Should proceed through the age step', async () => {
             const reply = await sendAlfredActivity(client, 'Yes');
             assertReplyForAlfred(reply);
@@ -165,6 +181,7 @@ async function runTest(dialogTest) {
             assert.strictEqual(reply.text, 'User Profile Saved.');
         });
 
+        // Continuation of Bernard Conversation.
         it('BERNARD Should proceed through the age step', async () => {
             const reply = await sendBernardActivity(client, 'Yes');
             assertReplyForBernard(reply);

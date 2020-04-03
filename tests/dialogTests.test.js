@@ -1,8 +1,19 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.
+ * Licensed under the MIT License.
+ */
+
 const { MemoryStorage, UserState } = require('botbuilder');
 const { runTest } = require('./genericDialogTest');
 const { UserProfileDialogNormal } = require('../dialogs/userProfileDialogNormal');
 const { UserProfileDialogGlobal } = require('../dialogs/userProfileDialogGlobal');
 const { UserProfileDialogProperty } = require('../dialogs/userProfileDialogProperty');
+
+/**
+ * This file sets up our various tests showing that a dialog with properly stored state (UserProfileDialogNormal)
+ * works with concurrent users, whereas dialogs with improperly stored state (UserProfileDialogGlobal, UserProfileDialogProperty)
+ * fail the exact same tests.
+ */
 
 const memoryStorage = new MemoryStorage();
 const userState = new UserState(memoryStorage);

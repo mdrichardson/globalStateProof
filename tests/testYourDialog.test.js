@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.
+ * Licensed under the MIT License.
+ */
+
 /* eslint-env node, mocha */
 const assert = require('assert');
 const { DialogTestClient } = require('botbuilder-testing');
@@ -9,7 +14,7 @@ const { CustomDialogTestLogger } = require('./testUtils');
  * Just edit all of the TODO: items.
  */
 
-// TODO: Replace this with your dialog. Leave the ":DialogToTest" part; this makes it so you don't need to rename other variables.
+// TODO: Replace this with your dialog. Leave the ": DialogToTest" part; this makes it so you don't need to rename other variables.
 // However, you may need to pass in additional arguments to the `const dialog = new DialogToTest()` call, below.
 const { UserProfileDialogNormal: DialogToTest } = require('../dialogs/userProfileDialogNormal');
 
