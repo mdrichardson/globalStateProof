@@ -6,7 +6,7 @@
 /* eslint-env node, mocha */
 const { DialogTestClient } = require('botbuilder-testing');
 const assert = require('assert');
-const { CustomDialogTestLogger, assertReplyForAlfred, sendAlfredActivity, assertReplyForBatman, sendBatmanActivity } = require('./testUtils');
+const { CustomDialogTestLogger, assertReplyForAlfred, sendAlfredActivity, assertReplyForBernard, sendBernardActivity } = require('./testUtils');
 
 function timeout(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -112,23 +112,23 @@ async function runTest(dialogTest) {
             assert.strictEqual(reply.text, 'Do you want to give your age? (1) Yes or (2) No');
         });
 
-        it('BATMAN Should proceed through the transport step', async () => {
-            const reply = await sendBatmanActivity(client, 'hi');
-            assertReplyForBatman(reply);
+        it('BERNARD Should proceed through the transport step', async () => {
+            const reply = await sendBernardActivity(client, 'hi');
+            assertReplyForBernard(reply);
             assert.strictEqual(reply.text, 'Please enter your mode of transport. (1) Car, (2) Bus, or (3) Bicycle');
         });
-        it('BATMAN Should proceed through the name step', async () => {
-            const reply = await sendBatmanActivity(client, 'Bus');
-            assertReplyForBatman(reply);
+        it('BERNARD Should proceed through the name step', async () => {
+            const reply = await sendBernardActivity(client, 'Bus');
+            assertReplyForBernard(reply);
             assert.strictEqual(reply.text, 'Please enter your name.');
         });
-        it('BATMAN Should proceed through the name confirm step', async () => {
-            let reply = await sendBatmanActivity(client, 'Batman');
-            assertReplyForBatman(reply);
-            assert.strictEqual(reply.text, 'Thanks Batman.');
+        it('BERNARD Should proceed through the name confirm step', async () => {
+            let reply = await sendBernardActivity(client, 'Bernard');
+            assertReplyForBernard(reply);
+            assert.strictEqual(reply.text, 'Thanks Bernard.');
 
             reply = client.getNextReply();
-            assertReplyForBatman(reply);
+            assertReplyForBernard(reply);
             assert.strictEqual(reply.text, 'Do you want to give your age? (1) Yes or (2) No');
         });
 
@@ -165,36 +165,36 @@ async function runTest(dialogTest) {
             assert.strictEqual(reply.text, 'User Profile Saved.');
         });
 
-        it('BATMAN Should proceed through the age step', async () => {
-            const reply = await sendBatmanActivity(client, 'Yes');
-            assertReplyForBatman(reply);
+        it('BERNARD Should proceed through the age step', async () => {
+            const reply = await sendBernardActivity(client, 'Yes');
+            assertReplyForBernard(reply);
             assert.strictEqual(reply.text, 'Please enter your age.');
         });
-        it('BATMAN Should proceed through the picture step', async () => {
-            let reply = await sendBatmanActivity(client, '11');
-            assertReplyForBatman(reply);
+        it('BERNARD Should proceed through the picture step', async () => {
+            let reply = await sendBernardActivity(client, '11');
+            assertReplyForBernard(reply);
             assert.strictEqual(reply.text, 'I have your age as 11.');
 
             reply = client.getNextReply();
-            assertReplyForBatman(reply);
+            assertReplyForBernard(reply);
             assert.strictEqual(reply.text, 'Please attach a profile picture (or type any message to skip).');
         });
-        it('BATMAN Should proceed through the confirm step', async () => {
-            let reply = await sendBatmanActivity(client, 'no picture');
-            assertReplyForBatman(reply);
+        it('BERNARD Should proceed through the confirm step', async () => {
+            let reply = await sendBernardActivity(client, 'no picture');
+            assertReplyForBernard(reply);
             assert.strictEqual(reply.text, 'No attachments received. Proceeding without a profile picture...');
 
             reply = client.getNextReply();
-            assertReplyForBatman(reply);
-            assert.strictEqual(reply.text, 'I have your mode of transport as Bus and your name as Batman and your age as 11.');
+            assertReplyForBernard(reply);
+            assert.strictEqual(reply.text, 'I have your mode of transport as Bus and your name as Bernard and your age as 11.');
 
             reply = client.getNextReply();
-            assertReplyForBatman(reply);
+            assertReplyForBernard(reply);
             assert.strictEqual(reply.text, 'Would you like me to save this information? (1) Yes or (2) No');
         });
-        it('BATMAN Should proceed through the save step', async () => {
-            const reply = await sendBatmanActivity(client, 'Yes');
-            assertReplyForBatman(reply);
+        it('BERNARD Should proceed through the save step', async () => {
+            const reply = await sendBernardActivity(client, 'Yes');
+            assertReplyForBernard(reply);
             assert.strictEqual(reply.text, 'User Profile Saved.');
         });
     });
