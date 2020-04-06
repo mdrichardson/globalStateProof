@@ -27,14 +27,14 @@ const userState = new UserState(memoryStorage);
 const dialog = new DialogToTest(userState);
 
 // TODO: Replace this with the users you'd like to use in your test.
-// DO NOT remove the bot key.
+// DO NOT remove the bot key. Have at least two non-bot users.
 const USERS = {
     bot: { id: 'bot', name: 'bot' },
     alfred: { id: 'alfred', name: 'Alfred' },
     bernard: { id: 'bernard', name: 'Bernard' }
 };
 
-// TODO: Replace this with a "transcript" of your dialog. Ensure they have unique ids.
+// TODO: Replace this with a "transcript" of your dialog.
 // Assume that after a user response, the next activity will ALWAYS be the bot responding to that user.
 // Most activities will be text, but the test will assert-check all keys except the 'from' key.
 // The user MUST start the conversation with the bot, although it doesn't matter what text they send.
@@ -89,6 +89,7 @@ const activities = [
 // No need to change anything below this line.
 describe(`${ dialog.constructor.name } Test Concurrent Users`, async () => {
     if (!USERS.bot) throw new Error('bot key is required in USERS variable');
+    if (USERS.length < 3) throw new Error('you need at least two non-bot users in order to test concurrency issues');
     if (activities[0].from.id === USERS.bot.id) throw new Error('User MUST go first');
 
     const client = new DialogTestClient('test', dialog, undefined, [new CustomDialogTestLogger()]);

@@ -1,7 +1,7 @@
 {
-    "name": "multiturn-prompts-bot",
+    "name": "common-mistakes-bot",
     "version": "1.0.0",
-    "description": "Bot Builder v4 multiturn prompts sample",
+    "description": "Bot Builder v4 common mistakes sample",
     "author": "Microsoft",
     "license": "MIT",
     "main": "index.js",
@@ -9,7 +9,7 @@
         "start": "node ./index.js",
         "watch": "nodemon ./index.js",
         "lint": "eslint .",
-        "test": "mocha tests/**/*.test.js",
+        "test": "mocha tests/userProfileTest.test.js",
         "testYourDialog": "mocha tests/testYourDialog.test.js"
     },
     "repository": {
