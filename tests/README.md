@@ -18,6 +18,7 @@ There are two sets of tests included in this:
          1. Each user must initiate the conversation with the bot. The text used is irrelevant.
          2. The bot's reply must directly follow each user's message.
          3. Ensure multiple users interact with the bot at the same time at various stages of the dialog (as shown in the example transcript).
+3. Run the test from the root of this sample with `npm run testYourDialog`.
 
 ### Creating the Transcript
 
